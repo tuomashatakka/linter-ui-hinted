@@ -1,0 +1,111 @@
+{
+  "name": "linter-ui-trace",
+  "main": "./src/index.js",
+  "version": "0.0.0",
+  "description": "Unobtrusive yet informative decorations for displaying linter errors and warnings inlined in code",
+  "keywords": [
+    "linter-ui",
+    "decorations",
+    "markers",
+    "linter",
+    "display",
+    "filter",
+    "error",
+    "warning",
+    "grep",
+    "code-quality",
+    "dynamic",
+    "customization",
+    "configuration",
+    "subtle",
+    "clear"
+  ],
+  "styles": [ "styles/index.less" ],
+  "repository": "https://github.com/tuomashatakka/linter-ui-docks",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.17.0 <2.0.0"
+  },
+  "dependencies": {
+    "autobind-decorator": "^2.1.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^4.3.0",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4"
+  },
+  "providedServices": {
+    "linter-ui": {
+      "versions": {
+        "1.0.0": "provideLinterUI"
+      }
+    }
+  },
+  "consumedServices": {
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusbar"
+      }
+    }
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 7,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "globals": {
+      "atom": true,
+      "Promise": true,
+      "module": true,
+      "process": true,
+      "emit": true,
+      "require": true,
+      "document": true,
+      "window": true,
+      "jQuery": true,
+      "__dirname": true,
+      "__pathname": true,
+      "Map": true
+    },
+    "parser": "babel-eslint",
+    "plugins": [
+      "react",
+      "react-native",
+      "flowtype"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:flowtype/recommended"
+    ],
+    "rules": {
+      "react-native/no-unused-styles": 2,
+      "react-native/split-platform-components": 2,
+      "strict": 0
+    },
+    "settings": {
+      "react": {
+        "pragma": "React",
+        "version": "15.3.1"
+      },
+      "flowtype": {
+        "onlyFilesWithFlowAnnotation": true
+      }
+    }
+  },
+  "babel": {
+    "presets": ["react", "stage-0"],
+    "plugins": [
+      "transform-object-rest-spread",
+      "transform-decorators-legacy"
+    ]
+  }
+}
