@@ -1,5 +1,5 @@
 {
-  "name": "linter-ui-trace",
+  "name": "linter-ui-hinted",
   "main": "./src/index.js",
   "version": "0.0.0",
   "description": "Unobtrusive yet informative decorations for displaying linter errors and warnings inlined in code",

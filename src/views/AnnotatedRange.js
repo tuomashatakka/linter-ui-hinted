@@ -10,7 +10,7 @@ export default class AnnotatedRange {
     return {
       type: 'highlight',
       class: 'lint-annotation ' + severity,
-      onlyNonEmpty: true,
+      // onlyNonEmpty: true,
     }
   }
 
@@ -30,19 +30,19 @@ export default class AnnotatedRange {
       throw new TypeError(`Could not resolve a marker for the current cursor position while creating a new AnnotatedRange`)
 
     this.decoration = textEditor.decorateMarker(this.marker, decals)
-    this.activeItemChangeSubscription = atom.workspace.onDidChangeActivePaneItem(() => this.destroy())
-    console.warn("AnnotatedRange highlight applied", this)  // eslint-disable-line
+    // this.activeItemChangeSubscription = atom.workspace.onDidChangeActivePaneItem(() => this.destroy())
+    this.activeItemChangeSubscription = textEditor.onDidChangePath(() => this.destroy())
   }
 
   get properties () {
     return {
+      invalidate: 'never',
       type: AnnotatedRange.type,
       ...this.message
     }
   }
 
   destroy () {
-    console.warn("Destroying AnnotatedRange", this)  // eslint-disable-line
     this.marker.destroy()
     this.activeItemChangeSubscription.dispose()
   }

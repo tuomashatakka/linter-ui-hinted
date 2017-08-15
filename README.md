@@ -1,5 +1,13 @@
-# linter-ui-docks package
+# Hinted – UI package for linter
 
-A short description of your package.
+User interface for highlighting linter errors & warnings in the editor.
 
-![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
+Multiple styles for highlights to choose from:
+
+ - Background-tinted;
+ - Underlined with regular, dotted and bold variants; and
+ - Bordered with regular, dotted and bold variants
+
+The package is designed to be pluggable - only the text editor highlights & overlays
+are provided. If you also want a panel for displaying all linter messages in a list,
+please consider using the default linter-ui-default package's docks.

@@ -1,41 +1,71 @@
 @import "ui-variables";
 @import "syntax-variables";
 
-@overlay-shadow:            0 0 4em fade(black, 15%);
-@overlay-border-radius:     2px;
-@highlight-border-radius:   2px;
-@overlay-message-font-size: 0.9em;
 @ms: 300ms;
 
-.lint-annotation {
-  .states();
-  @padding-vertical: 0px;
-  @padding-horizontal: 3px;
+@highlight-opacity:            0.8;
+@highlight-blend-mode:         overlay;
+@highlight-border-radius:      2px;
+@highlight-padding-vertical:   0px;
+@highlight-padding-horizontal: 3px;
 
-  opacity:        0.6;
-  background:     var(--background-color);
-  box-sizing:     content-box !important;
-  mix-blend-mode: color;
+@overlay-shadow:               0 0 4em fade(black, 15%);
+@overlay-border-radius:        2px;
+@overlay-message-font-size:    0.9em;
+
+
+
+// Highlights
+
+.highlight .lint-annotation {
+  .states;
+
+  opacity:        @highlight-opacity;
   border-radius:  @highlight-border-radius;
-  padding:        @padding-vertical @padding-horizontal;
-  margin:        -@padding-vertical 0 0 -@padding-horizontal }
+  box-sizing:     content-box !important;
+
+  // Style: Background (default)
+  [highlight-style='background'] & {
+    mix-blend-mode: @highlight-blend-mode;
+    margin:        -@highlight-padding-vertical 0 0 -@highlight-padding-horizontal;
+    padding:        @highlight-padding-vertical @highlight-padding-horizontal;
+    background:     var(--background-color) }
+
+  // Style: Bordered
+  [highlight-style*='border'] & {
+    border-style: solid;
+    border-color: var(--border-color);
+    border-width: var(--border-width, 1px) }
+
+  // Style: Underlined
+  [highlight-style*='underline'] & {
+    opacity:      1;
+    border-style: solid;
+    border-color: var(--border-color);
+    border-width: 0 0 var(--border-width, 1px) }
+
+  // Sub: dotted borders
+  [highlight-style*='dotted'] & {
+    border-style: dotted }
+
+  // Sub: bold borders
+  [highlight-style*='bold'] & {
+    --border-width: 2px }
+
+}
+
+
+// Overlays
 
 .lint-annotation-overlay {
   color:            @text-color;
   box-shadow:       @overlay-shadow;
   background-color: @overlay-background-color;
 
-  .message.hidden {
-    opacity:     0;
-    display:     block !important;
-    max-height:  0;
-    overflow:    hidden;
-    padding-top: 0;
-  }
-
   .message {
-    .caret();
-    .states();
+    .caret;
+    .states;
+
     transition:    @ms opacity, @ms padding, @ms max-height, @ms * 2 background-color;
     max-width:     40em;
     max-height:    16em;
@@ -44,10 +74,35 @@
     padding:       @component-padding;
     font-size:     @overlay-message-font-size;
     background:    var(--background-color);
-    border-radius: 0 @overlay-border-radius @overlay-border-radius @overlay-border-radius }}
+    border-radius: 0 @overlay-border-radius @overlay-border-radius @overlay-border-radius }
 
+  .message.hidden {
+    overflow:    hidden !important;
+    display:     block !important;
+    opacity:     0;
+    max-height:  0;
+    padding-top: 0;
+    padding-bottom: 0 }
+
+  .message h4 {
+    margin:  0;
+    padding: 0 0 @component-padding * 0.6;
+    font-weight: inherit }
+
+  .message .excerpt {
+    margin:  0;
+    padding: 0 }
+}
+
+
+// Mixins
 
 .states () {
+  .bg (@col) {
+    --background-color: @col;
+    --border-color: var(--background-color, lighten(@col, 2%)) }
+
+  & { .bg(@overlay-background-color) }
   &.info    { .bg(@text-color-info) }
   &.success { .bg(@text-color-success) }
   &.warning { .bg(@text-color-warning) }
@@ -56,28 +111,21 @@
   &.highlight { .bg(@background-color-highlight) }
 }
 
-
-.bg (@col) {
-  // @bgc: @syntax-background-color;
-  --background-color: @col;
-  --border-color: var(--background-color, lighten(@col, 2%));
-}
-
-
 .caret () {
   @size:    8px;
   position: relative;
 
   &::before {
+    content:      "";
     top:          0;
     left:         -1px;
-    content:      "";
     display:      block;
     position:     absolute;
     transform:    translate(0, -100%);
     border-style: solid;
     border-color: transparent transparent var(--background-color);
-    border-width: 0 @size @size 0 }}
+    border-width: 0 @size @size 0 }
+}
 
 
 .braces () {

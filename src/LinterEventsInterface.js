@@ -9,51 +9,60 @@ export default class LinterEventsInterface {
     this.messages = new Map()
     this.annotations = []
     this.overlay = null
+
+    atom.workspace.observeActiveTextEditor(this.renderOverlay)
   }
 
-  @autobind
-  didBeginLinting (/* linter, path */) {
-  }
-
-  @autobind
-  didFinishLinting (/* linter, path */) {
-    // this.update({ linter, path })
-  }
+  didBeginLinting (/* linter, path */) { }
+  didFinishLinting (/* linter, path */) { }
 
   @autobind
   render ({ messages }) {
-    const editor = atom.workspace.getActiveTextEditor()
-    const path   = editor ? editor.getPath() : null
-    const addMessage = message => this.messages.set(message.key, message)
-    const messageInActiveEditor = message  => path && message.location.file === path
-    const relatedMessages = messages.filter(messageInActiveEditor)
-
     this.clear()
-    this.renderMarkers(...relatedMessages)
-    this.renderOverlay(editor)
-    relatedMessages.map(addMessage)
+    messages.forEach(message => this.messages.set(message.key, message))
+    this.renderMarkers()
   }
 
-  clear () {
-    this.annotations.forEach(annotation => annotation.destroy())
-    this.messages.clear()
+  get relatedMessages () {
+    const editor   = atom.workspace.getActiveTextEditor()
+    const path     = editor ? editor.getPath() : null
+    const messages = [...this.messages.values()]
+    const messageInActiveEditor = message  => path && message.location.file === path
+    return messages.filter(messageInActiveEditor)
+  }
+
+  @autobind
+  renderOverlay (editor) {
     if (this.overlay)
       this.overlay.destroy()
+    this.overlay = new AnnotationMarker(editor)
+    this.renderMarkers()
   }
 
-  renderOverlay (editor) {
-    this.overlay = new AnnotationMarker(editor)
+  removeMarkers (...keys) {
+    for (let annotation of this.annotations) {
+      if (keys.indexOf(annotation.message.key) > -1)
+        annotation.destroy()
+    }
   }
 
   renderMarkers (...messages) {
+
+    const editor = atom.workspace.getActiveTextEditor()
+
+    if (messages.length === 0)
+      messages = this.relatedMessages
+
+    this.annotations.forEach(annotation =>
+      annotation.destroy())
+
     for (let message of messages) {
-      let marker = renderMarker(message)
+      let marker = new AnnotatedRange(editor, message)
       this.annotations.push(marker)
     }
   }
-}
 
-function renderMarker (annotation) {
-  const editor = atom.workspace.getActiveTextEditor()
-  return new AnnotatedRange(editor, annotation)
+  clear () {
+    this.messages.clear()
+  }
 }

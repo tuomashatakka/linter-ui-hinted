@@ -1,19 +1,15 @@
 {
-  "layout": {
-    "order": 1,
-    "type": "object",
-    "properties": {
-      "statusBarLocation": {
-        "description": "Set the linter UI's status bar item location",
-        "type": "string",
-        "default": "left",
-        "enum": ["disabled", "left", "right"]
-      },
-      "compact": {
-        "description": "Reduce the amount of vertical space required by listed messages",
-        "type": "boolean",
-        "default": "false"
-      }
-    }
+  "style": {
+    "type": "string",
+    "title": "Highlight markers' style",
+    "default": "underline-bold",
+    "enum": [
+      "background",
+      "border",
+      "border-dotted",
+      "underline",
+      "underline-dotted",
+      "underline-bold"
+    ]
   }
 }

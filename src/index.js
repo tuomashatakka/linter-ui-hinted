@@ -4,6 +4,7 @@ import { CompositeDisposable, Disposable } from 'atom'
 import MessageDelegate from './MessageDelegate'
 
 let manager
+
 let removeLayer = () => new Disposable(() => manager ? manager.destroy() : null)
 
 export default {
@@ -13,8 +14,12 @@ export default {
   config: require('./configuration.json'),
 
   activate () {
+    const packageName = require('../package.json').name
+
     this.subscriptions = new CompositeDisposable()
-    // this.subscriptions.add(atom.workspace.observeActiveTextEditor(provideOverlayToActiveEditor))
+    this.subscriptions.add(atom.config.observe(`${packageName}.style`, setHighlightStyling))
+
+    // TODO: Register view providers for annotation views
     // this.subscriptions.add(registerOpener(AnnotationOverlay))
     // this.subscriptions.add(registerViewProvider(AnnotationOverlay, LinterGUIView))
   },
@@ -33,6 +38,10 @@ export default {
   async consumeStatusbar () {
   }
 
+}
+
+function setHighlightStyling (style) {
+  document.body.setAttribute('highlight-style', style)
 }
 
 
