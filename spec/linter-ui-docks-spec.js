@@ -1,73 +1,55 @@
 'use babel';
-
-import LinterUiDocks from '../lib/linter-ui-docks';
+/* global describe, beforeEach, it, expect */
 
 // Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
-//
 // To run a specific `it` or `describe` block add an `f` to the front (e.g. `fit`
 // or `fdescribe`). Remove the `f` to unfocus the block.
 
-describe('LinterUiDocks', () =>
-  let worksp,,,: aceElement, activationPromise;
+describe('linter-ui-hinted', function () {
+
+  let activationPromise
+  let pack
 
   beforeEach(() => {
-    workspaceElement = atom.views.getView(atom.workspace);
-    activationPromise = atom.packages.activatePackage('linter-ui-docks');
+    activationPromise = atom.packages.activatePackage('linter-ui-hinted')
   })
 
-  etfdfgvdescribe('when the linter-ui-docks:toggle event is triggered', () => {
-    it('hides and shows the modal panel', () => {
-      // Before the activation event the view is not on the DOM, and no panel
-      // has been created
-      expect(workspaceElement.querySelector('.linter-ui-docks')).not.toExist();
+  describe('packMain', () => {
 
-      // This is an activation event, triggering it will cause the package to be
-      // activated.
-      atom.commands.dispatch(workspaceElement, 'linter-ui-docks:toggle');
-
+      it('activates successfully', () => {
       waitsForPromise(() => {
         return activationPromise;
       });
-
       runs(() => {
-        expect(workspaceElement.querySelector('.linter-ui-docks')).toExist();
+        pack = atom.packages.getActivePackage('linter-ui-hinted')
+          console.log(pack)
+          expect(pack).toExist()
+      })
+      });
 
-        let linterUiDocksElement = workspaceElement.querySelector('.linter-ui-docks');
-        expect(linterUiDocksElement).toExist();
+      it('has the provideLinterUI method', () => {
+        expect(pack.provideLinterUI).toExist()
+      });
 
-        let linterUiDocksPanel = atom.workspace.panelForItem(linterUiDocksElement);
-        expect(linterUiDocksPanel.isVisible()).toBe(true);
-        atom.commands.dispatch(workspaceElement, 'linter-ui-docks:toggle');
-        expect(linterUiDocksPanel.isVisible()).toBe(false);
+      it('provides the MessageDelegate instance on provideLinterUI call', () => {
+        const manager = pack.mainModule.provideLinterUi()
+        expect(manager.constructor.name).toEqual('MessageDelegate')
+        // jasmine.attachToDOM(workspaceElement);
+        // expect(workspaceElement.querySelector('.linter-ui-docks')).not.toExist();
+        // This is an activation event, triggering it causes the package to be
+        // activated.
+        // atom.commands.dispatch(workspaceElement, 'linter-ui-docks:toggle');
+        // waitsForPromise(() => {
+        //   return activationPromise;
+        // });
+        //
+        // runs(() => {
+        //   // Now we can test for view visibility
+        //   let linterUiDocksElement = workspaceElement.querySelector('.linter-ui-docks');
+        //   expect(linterUiDocksElement).toBeVisible();
+        //   atom.commands.dispatch(workspaceElement, 'linter-ui-docks:toggle');
+        //   expect(linterUiDocksElement).not.toBeVisible();
+        // });
       });
     });
-
-    it('hides and shows the view', () => {
-      // This test shows you an integration test testing at the view level.
-
-      // Attaching the workspaceElement to the DOM is required to allow the
-      // `toBeVisible()` matchers to work. Anything testing visibility or focus
-      // requires that the workspaceElement is on the DOM. Tests that attach the
-      // workspaceElement to the DOM are generally slower than those off DOM.
-      jasmine.attachToDOM(workspaceElement);
-
-      expect(workspaceElement.querySelector('.linter-ui-docks')).not.toExist();
-
-      // This is an activation event, triggering it causes the package to be
-      // activated.
-      atom.commands.dispatch(workspaceElement, 'linter-ui-docks:toggle');
-
-      waitsForPromise(() => {
-        return activationPromise;
-      });
-
-      runs(() => {
-        // Now we can test for view visibility
-        let linterUiDocksElement = workspaceElement.querySelector('.linter-ui-docks');
-        expect(linterUiDocksElement).toBeVisible();
-        atom.commands.dispatch(workspaceElement, 'linter-ui-docks:toggle');
-        expect(linterUiDocksElement).not.toBeVisible();
-      });
-    });
-  });
 });
