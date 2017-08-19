@@ -1,7 +1,7 @@
 {
   "name": "linter-ui-hinted",
   "main": "./src/index.js",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Unobtrusive yet informative decorations for displaying linter errors and warnings inlined in code",
   "keywords": [
     "linter-ui",
@@ -20,14 +20,16 @@
     "subtle",
     "clear"
   ],
-  "styles": [ "styles/index.less" ],
+  "styles": [
+    "styles/index.less"
+  ],
   "readmeFilename": "README.md",
   "repository": "https://github.com/tuomashatakka/linter-ui-hinted",
   "license": "MIT",
   "author": {
-    "name": "Tuomas Hatakka", 
+    "name": "Tuomas Hatakka",
     "email": "tuomas.hatakka@gmail.com"
-  }, 
+  },
   "engines": {
     "atom": ">=1.17.0 <2.0.0"
   },
@@ -96,7 +98,10 @@
     }
   },
   "babel": {
-    "presets": ["react", "stage-0"],
+    "presets": [
+      "react",
+      "stage-0"
+    ],
     "plugins": [
       "transform-object-rest-spread",
       "transform-decorators-legacy"
