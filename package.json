@@ -21,7 +21,7 @@
     "clear"
   ],
   "styles": [ "styles/index.less" ],
-  "repository": "https://github.com/tuomashatakka/linter-ui-docks",
+  "repository": "https://github.com/tuomashatakka/linter-ui-hinted",
   "license": "MIT",
   "engines": {
     "atom": ">=1.17.0 <2.0.0"
