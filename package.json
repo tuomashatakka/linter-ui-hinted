@@ -21,15 +21,18 @@
     "clear"
   ],
   "styles": [ "styles/index.less" ],
+  "readmeFilename": "README.md",
   "repository": "https://github.com/tuomashatakka/linter-ui-hinted",
-  "author": "tuomashatakka",
   "license": "MIT",
+  "author": {
+    "name": "Tuomas Hatakka", 
+    "email": "tuomas.hatakka@gmail.com"
+  }, 
   "engines": {
     "atom": ">=1.17.0 <2.0.0"
   },
-  "dependencies": {
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+  "bugs": {
+    "url": "https://github.com/tuomashatakka/linter-ui-hinted/issues"
   },
   "devDependencies": {
     "autobind-decorator": "^2.1.0",
