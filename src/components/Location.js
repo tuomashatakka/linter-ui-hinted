@@ -1,5 +1,4 @@
 'use babel'
-// @flow
 
 import React from 'react'
 import prop from 'prop-types'

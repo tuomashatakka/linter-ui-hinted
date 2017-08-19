@@ -27,25 +27,20 @@
     "atom": ">=1.17.0 <2.0.0"
   },
   "dependencies": {
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4"
+  },
+  "devDependencies": {
     "autobind-decorator": "^2.1.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
-    "eslint": "^4.3.0",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "eslint": "^4.3.0"
   },
   "providedServices": {
     "linter-ui": {
       "versions": {
         "1.0.0": "provideLinterUI"
-      }
-    }
-  },
-  "consumedServices": {
-    "status-bar": {
-      "versions": {
-        "^1.0.0": "consumeStatusbar"
       }
     }
   },
@@ -77,18 +72,13 @@
     },
     "parser": "babel-eslint",
     "plugins": [
-      "react",
-      "react-native",
-      "flowtype"
+      "react"
     ],
     "extends": [
       "eslint:recommended",
-      "plugin:react/recommended",
-      "plugin:flowtype/recommended"
+      "plugin:react/recommended"
     ],
     "rules": {
-      "react-native/no-unused-styles": 2,
-      "react-native/split-platform-components": 2,
       "strict": 0
     },
     "settings": {

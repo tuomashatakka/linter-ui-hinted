@@ -34,9 +34,6 @@ export default {
     manager = new MessageDelegate()
     this.subscriptions.add(removeLayer())
     return manager
-  },
-
-  async consumeStatusbar () {
   }
 
 }

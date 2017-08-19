@@ -4,10 +4,10 @@
 @ms: 300ms;
 
 @highlight-opacity:            0.8;
-@highlight-blend-mode:         overlay;
+@highlight-blend-mode:         screen;
 @highlight-border-radius:      2px;
 @highlight-padding-vertical:   0px;
-@highlight-padding-horizontal: 3px;
+@highlight-padding-horizontal: 2px;
 
 @overlay-shadow:               0 0 4em fade(black, 15%);
 @overlay-border-radius:        2px;
@@ -27,7 +27,7 @@
   // Style: Background (default)
   [highlight-style='background'] & {
     mix-blend-mode: @highlight-blend-mode;
-    margin:        -@highlight-padding-vertical 0 0 -@highlight-padding-horizontal;
+    margin:        -(@highlight-padding-vertical + 1px) 0 0 -(@highlight-padding-horizontal - 1px);
     padding:        @highlight-padding-vertical @highlight-padding-horizontal;
     background:     var(--background-color) }
 
