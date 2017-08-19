@@ -1,4 +1,7 @@
 'use babel'
+import autobind from 'autobind-decorator'
+import AnnotatedRange from './views/AnnotatedRange'
+import AnnotationMarker from './views/AnnotationMarker'
 import LinterEventsInterface from './LinterEventsInterface'
 
 export default class MessageDelegate extends LinterEventsInterface {
@@ -8,10 +11,74 @@ export default class MessageDelegate extends LinterEventsInterface {
     class: 'lint-annotation',
     onlyNonEmpty: true,
   }
-  get name () { return "Linter overlay" }
-  get editor () { return atom.workspace.getActiveTextEditor() }
-  dispose () { this.subscriptions.dispose() }
-  destroy () { this.dispose() }
+
+  constructor () {
+    super ()
+    this.annotations = []
+    this.overlay = null
+
+    atom.workspace.observeActiveTextEditor(this.renderOverlay)
+  }
+
+  /**
+   * Render a popup overlay in the active text editor.
+   * The details for a linter message are displayed on
+   * the rendered overlay whenever the cursor is on any
+   * error.
+   * @method renderOverlay
+   */
+
+  @autobind
+  renderOverlay (editor) {
+    if (this.overlay)
+      this.overlay.destroy()
+
+    if (!editor)
+      return
+
+    this.overlay = new AnnotationMarker(editor)
+    this.renderMessages(editor)
+  }
+
+  /**
+   * Render the given messages into the given editor, or the
+   * current editor if no editor instance is given
+   * @method renderMessages
+   * @param  {TextEditor} [editor=null] Editor into which the highlight markers
+   *                                    should be displayed in
+   * @param  {Array}      messages      A list of messages that will be rendered.
+   *                                    If no messages are provided, relatedMessages
+   *                                    are used
+   */
+
+  renderMessages (editor=null, ...messages) {
+    editor = editor || this.editor
+
+    if (messages.length === 0)
+      messages = this.relatedMessages
+
+    this.annotations.forEach(annotation =>
+      annotation.destroy())
+
+    for (let message of messages) {
+      let marker = new AnnotatedRange(editor, message)
+      this.annotations.push(marker)
+    }
+  }
+
+  /**
+   * Remove highlight markers
+   * @method removeMarkers
+   * @param  {Array}      keys An array of keys of the messages that should be
+   *                           deleted
+   */
+
+  removeMarkers (...keys) {
+    for (let annotation of this.annotations) {
+      if (keys.indexOf(annotation.message.key) > -1)
+        annotation.destroy()
+    }
+  }
 
 }
 

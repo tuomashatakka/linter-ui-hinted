@@ -14,14 +14,13 @@ export default {
   config: require('./configuration.json'),
 
   activate () {
+    // TODO: Register view providers for annotation views
+    // this.subscriptions.add(registerOpener(AnnotationOverlay))
+    // this.subscriptions.add(registerViewProvider(AnnotationOverlay, LinterGUIView))
     const packageName = require('../package.json').name
 
     this.subscriptions = new CompositeDisposable()
     this.subscriptions.add(atom.config.observe(`${packageName}.style`, setHighlightStyling))
-
-    // TODO: Register view providers for annotation views
-    // this.subscriptions.add(registerOpener(AnnotationOverlay))
-    // this.subscriptions.add(registerViewProvider(AnnotationOverlay, LinterGUIView))
   },
 
   deactivate () {
@@ -29,8 +28,10 @@ export default {
   },
 
   provideLinterUI () {
-    manager = new MessageDelegate()
+    // TODO: Contain the highlight markers on a dedicated layer
     // let annotationsLayer = new AnnotationOverlay()
+
+    manager = new MessageDelegate()
     this.subscriptions.add(removeLayer())
     return manager
   },
@@ -43,56 +44,3 @@ export default {
 function setHighlightStyling (style) {
   document.body.setAttribute('highlight-style', style)
 }
-
-
-// function provideOverlayToActiveEditor (editor) {
-//
-// }
-
-
-// const linterURI = uri => 0 === 'linter://'.indexOf(uri)
-
-
-// function registerOpener (viewClass) {
-//   let op = function(uri) {
-//     if (linterURI(uri))
-//       return new viewClass(uri)
-//   }
-//
-//   return atom.workspace.addOpener(op)
-// }
-//
-//
-// /**
-//  * Registers a new view provider to the global view registry. Also assigns
-//  *
-//  * @method registerViewProvider
-//  *
-//  * @param  {constructor}             model A class for the model that a view is registered for
-//  * @param  {constructor}             view  Bound view's constructor
-//  *
-//  * @return {Disposable}             A disposable for the registered view provder
-//  */
-//
-//  function registerViewProvider (model, view) {
-//
-//   if (!(view.item &&
-//         view.getItem ||
-//        (view.prototype && view.prototype.getItem)))
-//     throw new Error("The view " + view.name + " should implement a getItem method")
-//
-//   model.prototype.getElement = function () {
-//     if (this.element)
-//       return this.element
-//   }
-//
-//   const provideView = (/*obj*/) => {
-//     return new view()
-//     // let v          = new view()
-//     // v.model        = obj
-//     // obj.view       = v
-//     // return typeof v.getItem === 'function' ? v.getItem() : v.item
-//   }
-//
-//   return atom.views.addViewProvider(model, provideView)
-// }

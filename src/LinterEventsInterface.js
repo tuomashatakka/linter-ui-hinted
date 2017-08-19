@@ -1,16 +1,10 @@
 'use babel'
 import autobind from 'autobind-decorator'
-import AnnotatedRange from './views/AnnotatedRange'
-import AnnotationMarker from './views/AnnotationMarker'
 
 export default class LinterEventsInterface {
 
   constructor () {
     this.messages = new Map()
-    this.annotations = []
-    this.overlay = null
-
-    atom.workspace.observeActiveTextEditor(this.renderOverlay)
   }
 
   didBeginLinting (/* linter, path */) { }
@@ -20,8 +14,22 @@ export default class LinterEventsInterface {
   render ({ messages }) {
     this.clear()
     messages.forEach(message => this.messages.set(message.key, message))
-    this.renderMarkers()
+    this.renderMessages()
   }
+
+  get name () {
+    return "Linter overlay"
+  }
+
+  get editor () {
+    return atom.workspace.getActiveTextEditor()
+  }
+
+  /**
+   * Get the linter messages related to the currently active editor
+   * @method relatedMessages
+   * @return {Array} A listing of all messages referring to the active text editor
+   */
 
   get relatedMessages () {
     const editor   = atom.workspace.getActiveTextEditor()
@@ -31,38 +39,20 @@ export default class LinterEventsInterface {
     return messages.filter(messageInActiveEditor)
   }
 
-  @autobind
-  renderOverlay (editor) {
-    if (this.overlay)
-      this.overlay.destroy()
-    this.overlay = new AnnotationMarker(editor)
-    this.renderMarkers()
-  }
-
-  removeMarkers (...keys) {
-    for (let annotation of this.annotations) {
-      if (keys.indexOf(annotation.message.key) > -1)
-        annotation.destroy()
-    }
-  }
-
-  renderMarkers (...messages) {
-
-    const editor = atom.workspace.getActiveTextEditor()
-
-    if (messages.length === 0)
-      messages = this.relatedMessages
-
-    this.annotations.forEach(annotation =>
-      annotation.destroy())
-
-    for (let message of messages) {
-      let marker = new AnnotatedRange(editor, message)
-      this.annotations.push(marker)
-    }
-  }
+  /**
+   * Remove all messages
+   * @method clear
+   */
 
   clear () {
     this.messages.clear()
+  }
+
+  dispose () {
+    this.subscriptions.dispose()
+  }
+
+  destroy () {
+    this.dispose()
   }
 }
