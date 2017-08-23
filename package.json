@@ -36,8 +36,10 @@
   "bugs": {
     "url": "https://github.com/tuomashatakka/linter-ui-hinted/issues"
   },
+  "dependencies": {
+    "autobind-decorator": "^2.1.0"
+  },
   "devDependencies": {
-    "autobind-decorator": "^2.1.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
