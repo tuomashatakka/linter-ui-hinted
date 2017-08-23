@@ -1,6 +1,16 @@
 'use babel'
 import autobind from 'autobind-decorator'
 
+function getPathForMessage (message = {}) {
+  let { location, filePath } = message
+  if (location)
+    return location.file
+  else if (filePath)
+    return filePath
+  else
+    return ''
+}
+
 export default class LinterEventsInterface {
 
   constructor () {
@@ -35,7 +45,8 @@ export default class LinterEventsInterface {
     const editor   = atom.workspace.getActiveTextEditor()
     const path     = editor ? editor.getPath() : null
     const messages = [...this.messages.values()]
-    const messageInActiveEditor = message  => path && message.location.file === path
+    console.log(messages)
+    const messageInActiveEditor = message  => getPathForMessage(message) === path
     return messages.filter(messageInActiveEditor)
   }
 
@@ -44,14 +55,17 @@ export default class LinterEventsInterface {
    * @method clear
    */
 
+   @autobind
   clear () {
     this.messages.clear()
   }
 
+  @autobind
   dispose () {
     this.subscriptions.dispose()
   }
 
+  @autobind
   destroy () {
     this.dispose()
   }
