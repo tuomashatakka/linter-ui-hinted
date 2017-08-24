@@ -3,6 +3,16 @@ import autobind from 'autobind-decorator'
 import { CompositeDisposable } from 'atom'
 import { filterMessagesByEditor } from './utils'
 
+function getPathForMessage (message = {}) {
+  let { location, filePath } = message
+  if (location)
+    return location.file
+  else if (filePath)
+    return filePath
+  else
+    return ''
+}
+
 export default class LinterEventsInterface {
 
   constructor () {
@@ -61,9 +71,8 @@ export default class LinterEventsInterface {
    */
 
    @autobind
-  clear (editor=null) {
-    if (!editor)
-      this.messages.clear()
+  clear () {
+    this.messages.clear()
   }
 
   @autobind
