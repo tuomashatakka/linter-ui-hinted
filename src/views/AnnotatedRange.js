@@ -17,6 +17,7 @@ export default class AnnotatedRange {
     // TODO: Contain the highlight markers on a dedicated layer
     // let layer  = this.getLayer(textEditor)
     // let marker = layer.markBufferRange(range, { ...message })
+
     this.message = props
 
     if (!(textEditor instanceof TextEditor))
@@ -29,8 +30,8 @@ export default class AnnotatedRange {
       throw new TypeError(`Could not resolve a marker for the current cursor position while creating a new AnnotatedRange`)
 
     this.decoration = textEditor.decorateMarker(this.marker, this.decor)
+    this.activeItemChangeSubscription = textEditor.onDidDestroy(() => this.destroy())
     // this.activeItemChangeSubscription = atom.workspace.onDidChangeActivePaneItem(() => this.destroy())
-    this.activeItemChangeSubscription = textEditor.onDidChangePath(() => this.destroy())
   }
 
   get properties () {
@@ -50,6 +51,7 @@ export default class AnnotatedRange {
 
   destroy () {
     this.marker.destroy()
+    this.decoration.destroy()
     this.activeItemChangeSubscription.dispose()
   }
 

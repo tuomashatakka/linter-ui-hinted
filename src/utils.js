@@ -1,4 +1,48 @@
+'use babel'
+import AnnotatedRange from './views/AnnotatedRange'
 
+export function getCurrentEditor () {
+  return atom.workspace.getActiveTextEditor()
+}
+
+export function getHeadForCurrentEditor () {
+  return getHead(getCurrentEditor())
+}
+
+export function getHead (editor) {
+  if (!editor)
+    return null
+  return editor.getCursorBufferPosition()
+  // let { marker } = editor.getLastCursor()
+  // return marker ? marker.getHeadBufferPosition() : null
+}
+
+export function getAnnotatedRanges (textEditor) {
+  return textEditor.findMarkers({ type: AnnotatedRange.type })
+}
+
+export function getPathForMessage (message = {}) {
+  let { location, filePath } = message
+  if (location)
+    return location.file
+  else if (filePath)
+    return filePath
+  else
+    return ''
+}
+
+export function filterMessagesByEditor (editor, ...messages) {
+  const messageInEditor = message  => getPathForMessage(message) === path
+  let path     = editor ? editor.getPath() : null
+  return messages.filter(messageInEditor)
+}
+
+export function editorIsVisible (editor) {
+  if (editor.isDestroyed())
+    return false
+  let { display } = getComputedStyle(editor.getElement())
+  return display !== 'none'
+}
 
 
 // function provideOverlayToActiveEditor (editor) {

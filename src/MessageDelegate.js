@@ -4,6 +4,12 @@ import AnnotatedRange from './views/AnnotatedRange'
 import AnnotationMarker from './views/AnnotationMarker'
 import LinterEventsInterface from './LinterEventsInterface'
 
+
+function contains (haystack, needle) {
+  return haystack.find(item => item.key === needle.key) ? true : false
+}
+
+
 export default class MessageDelegate extends LinterEventsInterface {
 
   static DECORATION = {
@@ -13,11 +19,25 @@ export default class MessageDelegate extends LinterEventsInterface {
   }
 
   constructor () {
-    super ()
-    this.annotations = []
+    super()
     this.overlay = null
+    this.annotations = []
 
-    atom.workspace.observeActiveTextEditor(this.renderOverlay)
+    let activeEditorSubscription = atom.workspace.observeActiveTextEditor(this.renderOverlay)
+
+    this.subscriptions.add(activeEditorSubscription)
+  }
+
+  getAnnotationByMessage (message) {
+    let annotation = this.annotations.find(annotation =>
+      annotation.message.key === message.key)
+    return annotation
+  }
+
+  clearAnnotationForMessage (message) {
+    let annotation = this.getAnnotationByMessage(message)
+    if (annotation)
+      annotation.destroy()
   }
 
   /**
@@ -37,30 +57,28 @@ export default class MessageDelegate extends LinterEventsInterface {
       return
 
     this.overlay = new AnnotationMarker(editor)
-    this.renderMessages(editor)
+    this.renderMessages(...this.getMessagesRelatedTo(editor))
   }
 
   /**
    * Render the given messages into the given editor, or the
    * current editor if no editor instance is given
    * @method renderMessages
-   * @param  {TextEditor} [editor=null] Editor into which the highlight markers
-   *                                    should be displayed in
-   * @param  {Array}      messages      A list of messages that will be rendered.
-   *                                    If no messages are provided, relatedMessages
-   *                                    are used
+   * @param  {TextEditor} editor   Editor into which the highlight markers
+   *                               should be displayed in
+   * @param  {Array}      messages A list of messages that will be rendered.
+   *                               If no messages are provided, relatedMessages
+   *                               are used
    */
 
-  renderMessages (editor=null, ...messages) {
-    editor = editor || this.editor
-
-    if (messages.length === 0)
-      messages = this.relatedMessages
+  renderMessages (...messages) {
+    let editor = this.editor
 
     this.annotations.forEach(annotation =>
       annotation.destroy())
 
     for (let message of messages) {
+      // this.clearAnnotationForMessage(message)
       let marker = new AnnotatedRange(editor, message)
       this.annotations.push(marker)
     }
@@ -75,7 +93,7 @@ export default class MessageDelegate extends LinterEventsInterface {
 
   removeMarkers (...keys) {
     for (let annotation of this.annotations) {
-      if (keys.indexOf(annotation.message.key) > -1)
+      if (!keys.length || keys.indexOf(annotation.message.key) > -1)
         annotation.destroy()
     }
   }

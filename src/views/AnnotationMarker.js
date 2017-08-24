@@ -1,26 +1,48 @@
 'use babel'
 
-import { TextEditor } from 'atom'
-import AnnotatedRange from './AnnotatedRange'
+import { TextEditor, CompositeDisposable } from 'atom'
+import { getAnnotatedRanges, getHead, editorIsVisible } from '../utils'
+
+
+function destroyInactive (item) {
+  if (item != this.editor || editorIsVisible(this.editor))
+    return
+  this.destroy()
+}
+
+
+function getOverlayTemplate ({ severity, excerpt }) {
+  return `
+    <h4 class='severity'>${severity}</h4>
+    <article class='excerpt'>${excerpt}</article>`
+}
+
 
 export default class AnnotationMarker {
 
   static getContent = getOverlayTemplate
+
   static decorations = {
     class: 'lint-annotation-overlay',
     type:  'overlay',
   }
-
 
   constructor (textEditor) {
 
     if (!(textEditor instanceof TextEditor))
       throw new ReferenceError(`AnnotationMarker's constructor must be called with a TextEditor instance as its first argument`)
 
+    const boundDidChangeSelection = ({ selection }) => this.didChangeSelection(selection)
+    const boundDestroyInactive    = destroyInactive.bind(this)
+    const subscriptions = [
+      textEditor.onDidChangeSelectionRange(boundDidChangeSelection),
+      atom.workspace.onDidChangeActivePaneItem(boundDestroyInactive),
+      // this.editor.onDidChangePath(() => this.destroy()),
+    ]
+
     this.editor = textEditor
-    // this.activeItemChangeSubscription = atom.workspace.onDidChangeActivePaneItem(() => this.destroy())
-    this.activeItemChangeSubscription = this.editor.onDidChangePath(() => this.destroy())
-    this.selectionChangeSubscription  = this.editor.onDidChangeSelectionRange(({ selection }) => this.didChangeSelection(selection))
+    this.subscriptions = new CompositeDisposable()
+    this.subscriptions.add(...subscriptions)
   }
 
   didChangeSelection (selection) {
@@ -33,23 +55,23 @@ export default class AnnotationMarker {
       this.hide()
   }
 
-  decorateEditor () {
+  decorateEditor (editor) {
     if (this.marker)
       this.marker.destroy()
 
-    let decals   = AnnotationMarker.decorations
-    let position = getHead(this.editor)
-
+    let position = getHead(editor)
     if (!position)
       throw new TypeError(`Could not resolve a marker for the current cursor position while creating a new AnnotationMarker`)
 
-    decals.item     = this.item
-    this.marker     = this.editor.markBufferPosition(position, { invalidate: 'touch' })
-    this.decoration = this.editor.decorateMarker(this.marker, decals)
+    let decals  = { ...AnnotationMarker.decorations, item: this.item }
+    this.marker = this.editor.markBufferPosition(position, { invalidate: 'touch' })
+    this.editor.decorateMarker(this.marker, decals)
   }
 
   show (message) {
-    this.decorateEditor()
+    if (!message)
+      return
+    this.decorateEditor(this.editor)
     this.item.setAttribute('class', 'message ' + message.severity)
     this.item.innerHTML = AnnotationMarker.getContent(message)
   }
@@ -62,8 +84,7 @@ export default class AnnotationMarker {
   destroy () {
     if (this.marker)
       this.marker.destroy()
-    this.activeItemChangeSubscription.dispose()
-    this.selectionChangeSubscription.dispose()
+    this.subscriptions.dispose()
   }
 
   get item () {
@@ -71,22 +92,4 @@ export default class AnnotationMarker {
       this._item = document.createElement('div')
     return this._item
   }
-}
-
-
-function getOverlayTemplate ({ severity, excerpt }) {
-  return `
-    <h4 class='severity'>${severity}</h4>
-    <article class='excerpt'>${excerpt}</article>`
-}
-
-function getHead (editor) {
-  if (!editor)
-    return null
-  let { marker } = editor.getLastCursor()
-  return marker ? marker.getHeadBufferPosition() : null
-}
-
-export function getAnnotatedRanges (textEditor) {
-  return textEditor.findMarkers({ type: AnnotatedRange.type })
 }

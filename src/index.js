@@ -14,13 +14,16 @@ export default {
   config: require('./configuration.json'),
 
   activate () {
+
     // TODO: Register view providers for annotation views
     // this.subscriptions.add(registerOpener(AnnotationOverlay))
     // this.subscriptions.add(registerViewProvider(AnnotationOverlay, LinterGUIView))
+
     const packageName = require('../package.json').name
+    const configSubscription = atom.config.observe(`${packageName}.style`, setHighlightStyling)
 
     this.subscriptions = new CompositeDisposable()
-    this.subscriptions.add(atom.config.observe(`${packageName}.style`, setHighlightStyling))
+    this.subscriptions.add(configSubscription)
   },
 
   deactivate () {
@@ -28,6 +31,7 @@ export default {
   },
 
   provideLinterUI () {
+
     // TODO: Contain the highlight markers on a dedicated layer
     // let annotationsLayer = new AnnotationOverlay()
 
@@ -37,6 +41,7 @@ export default {
   }
 
 }
+
 
 function setHighlightStyling (style) {
   document.body.setAttribute('highlight-style', style)

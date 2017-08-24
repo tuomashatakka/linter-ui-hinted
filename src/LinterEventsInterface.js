@@ -1,38 +1,40 @@
 'use babel'
 import autobind from 'autobind-decorator'
-
-function getPathForMessage (message = {}) {
-  let { location, filePath } = message
-  if (location)
-    return location.file
-  else if (filePath)
-    return filePath
-  else
-    return ''
-}
+import { CompositeDisposable } from 'atom'
+import { filterMessagesByEditor } from './utils'
 
 export default class LinterEventsInterface {
 
   constructor () {
     this.messages = new Map()
+    this.subscriptions = new CompositeDisposable()
   }
 
-  didBeginLinting (/* linter, path */) { }
-  didFinishLinting (/* linter, path */) { }
+  @autobind
+  registerMessage (message) {
+    this.messages.set(message.key, message)
+  }
 
   @autobind
   render ({ messages }) {
+    // Clear the old messages
     this.clear()
-    messages.forEach(message => this.messages.set(message.key, message))
-    this.renderMessages()
+
+    // Cache the new results
+    messages.forEach(this.registerMessage)
+
+    // Render all messages
+    this.renderMessages(...this.relatedMessages)
   }
 
-  get name () {
-    return "Linter overlay"
-  }
+  /**
+   * Get the linter messages related to the given editor
+   * @method getMessagesRelatedTo
+   * @return {Array} A listing of all messages referring to the editor
+   */
 
-  get editor () {
-    return atom.workspace.getActiveTextEditor()
+  getMessagesRelatedTo (editor) {
+    return filterMessagesByEditor(editor, ...this.messages.values())
   }
 
   /**
@@ -42,12 +44,15 @@ export default class LinterEventsInterface {
    */
 
   get relatedMessages () {
-    const editor   = atom.workspace.getActiveTextEditor()
-    const path     = editor ? editor.getPath() : null
-    const messages = [...this.messages.values()]
-    console.log(messages)
-    const messageInActiveEditor = message  => getPathForMessage(message) === path
-    return messages.filter(messageInActiveEditor)
+  return this.getMessagesRelatedTo(this.editor)
+  }
+
+  get editor () {
+    return atom.workspace.getActiveTextEditor()
+  }
+
+  get name () {
+    return "Linter overlay"
   }
 
   /**
@@ -56,8 +61,9 @@ export default class LinterEventsInterface {
    */
 
    @autobind
-  clear () {
-    this.messages.clear()
+  clear (editor=null) {
+    if (!editor)
+      this.messages.clear()
   }
 
   @autobind
@@ -69,4 +75,15 @@ export default class LinterEventsInterface {
   destroy () {
     this.dispose()
   }
+
+  didBeginLinting (/* linter, path */) {
+  }
+
+  didFinishLinting (/* linter, path */) {
+  }
+
+  renderMessages () {
+    throw new Error("Subclasses must implement the renderMessages method")
+  }
+
 }
