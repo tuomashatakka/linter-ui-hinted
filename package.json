@@ -1,7 +1,7 @@
 {
   "name": "linter-ui-hinted",
   "main": "./src/index.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Unobtrusive yet informative decorations for displaying linter errors and warnings inlined in code",
   "keywords": [
     "linter-ui",
