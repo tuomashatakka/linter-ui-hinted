@@ -45,8 +45,11 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
-    "eslint": "^4.3.0",
-    "eslint-plugin-react": "^7.3.0"
+    "eslint": "^4.7.2",
+    "eslint-plugin-flowtype": "^2.35.1",
+    "eslint-plugin-react": "^7.3.0",
+    "flow-bin": "^0.55.0",
+    "flowtype": "^2.0.0"
   },
   "providedServices": {
     "linter-ui": {
