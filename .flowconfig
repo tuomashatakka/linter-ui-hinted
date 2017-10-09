@@ -6,6 +6,7 @@ src/
 
 [libs]
 flow-typed/**
+flow-typed/atom.type.js
 
 [lints]
 
