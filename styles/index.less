@@ -61,9 +61,18 @@
   color:            @text-color;
   box-shadow:       @overlay-shadow;
   background-color: @overlay-background-color;
+  transition:       @ms transform, @ms margin-top;
+
+  &.above {
+    .message { .caret(above) }
+    .message .menu .icon { transform: rotate(180deg) }
+    transform: translateY(-100%);
+    margin-top: -2em }
+
+  &.below {
+    .message { .caret(below) }}
 
   .message {
-    .caret;
     .states;
 
     transition:    @ms opacity, @ms padding, @ms max-height, @ms * 2 background-color;
@@ -74,7 +83,51 @@
     padding:       @component-padding;
     font-size:     @overlay-message-font-size;
     background:    var(--background-color);
-    border-radius: 0 @overlay-border-radius @overlay-border-radius @overlay-border-radius }
+    border-radius: 0 @overlay-border-radius @overlay-border-radius @overlay-border-radius;
+
+    .excerpt {
+      margin:  0;
+      padding: 0 }
+
+    header {
+      display: flex;
+    }
+
+    header h4 {
+      flex:        1 0;
+      margin:      0;
+      padding:     0 0 @component-padding * 0.6;
+      font-weight: inherit }
+
+    header .menu {
+      flex:             0 0;
+      width:            2em;
+      height:           2em;
+      line-height:      2em;
+      display:          flex;
+      align-items:      center;
+      justify-content:  center }
+
+    .menu .icon {
+      color:          inherit;
+      cursor:         pointer;
+      z-index:        200;
+      display:        block;
+      position:       relative;
+      background:     rgba(0, 0, 0, 0.1);
+      text-align:     center;
+      line-height:    inherit;
+      border-radius:  50% }
+
+    .menu .toggle::before {
+      display:     block;
+      color:       inherit !important;
+      margin:      0;
+      height:      1.4em;
+      width:       1.4em;
+      line-height: 1.4em }
+  }
+
 
   .message.hidden {
     overflow:     hidden !important;
@@ -113,20 +166,28 @@
   &.highlight { .bg(@background-color-highlight) }
 }
 
-.caret () {
+.caret (@location) {
   @size:    8px;
   position: relative;
 
   &::before {
     content:      "";
-    top:          0;
     left:         -1px;
     display:      block;
     position:     absolute;
+    border-style: solid }
+
+  &::before when (@location = below) {
+    top:          0;
     transform:    translate(0, -100%);
-    border-style: solid;
     border-color: transparent transparent var(--background-color);
     border-width: 0 @size @size 0 }
+
+  &::before when (@location = above) {
+    bottom:       0;
+    transform:    translate(0, 100%);
+    border-color: var(--background-color) transparent transparent;
+    border-width: @size @size 0 0 }
 }
 
 

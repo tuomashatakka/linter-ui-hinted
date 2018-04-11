@@ -1,0 +1,6 @@
+{
+  "atom-workspace": {
+    "alt-shift-L o": "linter-ui-hinted:enable-overlay",
+    "alt-shift-L m": "linter-ui-hinted:show-markers"
+  }
+}

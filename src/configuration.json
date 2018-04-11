@@ -11,5 +11,15 @@
       "underline-dotted",
       "underline-bold"
     ]
+  },
+  "markersEnabled": {
+    "type": "boolean",
+    "description": "Toggle text editor's marker decorations' visibility",
+    "default": "true"
+  },
+  "overlayEnabled": {
+    "type": "boolean",
+    "description": "Enable the error overlay for displaying the linter errors' details",
+    "default": "true"
   }
 }

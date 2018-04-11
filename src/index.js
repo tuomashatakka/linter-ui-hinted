@@ -23,7 +23,11 @@ export default {
     const configSubscription = atom.config.observe(`${packageName}.style`, setHighlightStyling)
 
     this.subscriptions = new CompositeDisposable()
-    this.subscriptions.add(configSubscription)
+    this.subscriptions.add(
+      configSubscription
+      // registerMarkersVisibilityObserver,
+      // registerOverlayVisibilityObserver,
+    )
   },
 
   deactivate () {
@@ -40,6 +44,44 @@ export default {
     return manager
   }
 
+}
+
+const registerMarkersVisibilityObserver = () => registerVisibilityObserver('markers')
+
+function registerVisibilityObserver (name, subscription) {
+
+  const descriptor = `linter-ui-hinted.${name}Enabled`
+  return atom.config.observe(descriptor, (state) => {
+    let term = state ? 'disable' : 'enable'
+    if (subscription && !subscription.disposed)
+      subscription.dispose()
+
+    subscription = atom.commands.add(
+      'atom-text-editor', command,
+      () => atom.config.set(descriptor, state))
+  })
+}
+
+let visibilitySubscriptions = new CompositeDisposable()
+
+function reissueVisibilitySubscriptions () {
+  visibilitySubscriptions.dispose()
+  visibilitySubscriptions = new CompositeDisposable()
+  visibilitySubscriptions.add(
+    registerVisibilityToggleCommand('markers'),
+    registerVisibilityToggleCommand('overlay')
+  )
+}
+
+const registerVisibilityToggleCommand = name => {
+  let command = `linter-ui-hinted:${name}-markers`
+  return atom.commands.add('atom-text-editor', command, () => toggleVisibility(name))
+}
+
+const toggleVisibility = (name) => {
+  const descriptor = `linter-ui-hinted.${name}Enabled`
+  let state = atom.config.get(descriptor)
+  atom.config.set(descriptor, !state)
 }
 
 
