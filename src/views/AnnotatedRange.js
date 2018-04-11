@@ -1,6 +1,7 @@
 'use babel'
+// @flow
 
-import { TextEditor } from 'atom'
+import { Range, TextEditor } from 'atom'
 
 export default class AnnotatedRange {
 
@@ -23,15 +24,23 @@ export default class AnnotatedRange {
     if (!(textEditor instanceof TextEditor))
       throw new ReferenceError(`AnnotatedRange's constructor must be called with a TextEditor instance as its first argument`)
 
-    let range   = this.properties.location.position
-    this.marker = textEditor.markBufferRange(range, this.properties)
+    this.marker = textEditor.markBufferRange(this.position, this.properties)
 
     if (!this.marker)
       throw new TypeError(`Could not resolve a marker for the current cursor position while creating a new AnnotatedRange`)
 
     this.decoration = textEditor.decorateMarker(this.marker, this.decor)
-    this.activeItemChangeSubscription = textEditor.onDidDestroy(() => this.destroy())
+    this.subscription = textEditor.onDidDestroy(() => this.destroy())
     // this.activeItemChangeSubscription = atom.workspace.onDidChangeActivePaneItem(() => this.destroy())
+  }
+
+  get position () {
+    let { range, location } = this.message
+    if (location && location.position)
+      return location.position
+    if (range)
+      return range
+    return new Range([0, 0], [1, 0])
   }
 
   get properties () {
@@ -42,17 +51,22 @@ export default class AnnotatedRange {
     }
   }
 
+  get type () {
+    let type = this.message.severity || this.message.type || 'error'
+    return type.toLowerCase()
+  }
+
   get decor () {
     return {
       type:  AnnotatedRange.decorations.type,
-      class: [ AnnotatedRange.decorations.class, this.message.severity ].join(' ')
+      class: [ AnnotatedRange.decorations.class, this.type ].join(' ')
     }
   }
 
   destroy () {
     this.marker.destroy()
     this.decoration.destroy()
-    this.activeItemChangeSubscription.dispose()
+    this.subscription.dispose()
   }
 
 }

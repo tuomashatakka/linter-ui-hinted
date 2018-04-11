@@ -101,14 +101,15 @@
 .states () {
   .bg (@col) {
     --background-color: @col;
-    --border-color: var(--background-color, lighten(@col, 2%)) }
+    --border-color: var(--background-color, lighten(@col, 2%));
+  }
 
-  & { .bg(@overlay-background-color) }
-  &.info    { .bg(@text-color-info) }
-  &.success { .bg(@text-color-success) }
-  &.warning { .bg(@text-color-warning) }
-  &.error   { .bg(@text-color-error) }
-  &.fatal   { .bg(@text-color-error) }
+  &           { .bg(@overlay-background-color) }
+  &.info      { .bg(@text-color-info) }
+  &.success   { .bg(@text-color-success) }
+  &.error     { .bg(@text-color-error) }
+  &.fatal     { .bg(@text-color-error) }
+  &.warning   { .bg(darken(@text-color-warning, 12%)) }
   &.highlight { .bg(@background-color-highlight) }
 }
 
